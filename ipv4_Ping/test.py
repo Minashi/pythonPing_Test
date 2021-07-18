@@ -5,6 +5,7 @@ from data_Handling import save, load
 #   TODO
 #   Make better with Tkinter
 
+failed_List = []
 address_List = []
 outputList = []
 
@@ -26,8 +27,16 @@ class IpAddress:
     @staticmethod
     def ping_IP():
         for address in address_List:
-            ping(address.get_Ip_Address(), verbose=True)
-            sleep(3)
+            try:
+                ping(address.get_Ip_Address(), verbose=True)
+                sleep(3)
+            except:
+                print("Unable to ping: ", address.get_Ip_Address())
+                failed_List.append(address)
+                address_List.remove(address)
+                print("\nRemoved address, trying list again...\n")
+                sleep(1)
+                IpAddress.ping_IP()
 
     # Add a new Ip to the list
     @staticmethod
@@ -75,31 +84,37 @@ def menuGui():
     choice = 0
 
     print("Hello, what would you like to do?")
+    print("Add IP to list - Ping List - show List - Clear list\n - save List - load List\n - Help - Quit")
 
-    while choice != 7:
-        print("1 - Add IP to list")
-        print("2 - Ping List")
-        print("3 - show List")
-        print("4 - save List")
-        print("5 - load List")
-        print("6 - Clear list")
-        print("7 - Quit")
-        choice = int(input(">"))
+    while choice != 'quit':
+        choice = input(">")
 
-        if choice == 1:
+        if choice == 'add':
             input_Ip_Address()
-        elif choice == 2:
+        elif choice == 'ping':
             IpAddress.ping_IP()
-        elif choice == 3:
+            print("Ping Done\n")
+            print("Addresses failed: ")
+            for address in failed_List:
+                print(address.get_Ip_Address())
+        elif choice == 'show':
             IpAddress.print_List()
-        elif choice == 4:
+        elif choice == 'save':
             save(address_List)
-        elif choice == 5:
+        elif choice == 'load':
             update_List()
-        elif choice == 6:
+        elif choice == 'clear':
             IpAddress.clear_List()
-        elif choice == 7:
+        elif choice == 'quit':
             exit()
+        elif choice == 'help':
+            print("- Add IP to list: 'add'")
+            print("- Ping List: 'ping'")
+            print("- show List: 'show'")
+            print("- save List: 'save'")
+            print("- load List: 'load'")
+            print("- Clear list: 'clear'")
+            print("- Quit: 'quit'")
         else:
             print("Invalid choice...")
 
