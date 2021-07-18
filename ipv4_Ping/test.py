@@ -2,11 +2,11 @@ from pythonping import ping
 from time import sleep
 from data_Handling import save, load
 
-#   TODO
-#   Make better with Tkinter
-
+# Lists
+response_List = []
 failed_List = []
 address_List = []
+ping_List = []
 outputList = []
 
 
@@ -26,15 +26,17 @@ class IpAddress:
     # Ping IP
     @staticmethod
     def ping_IP():
-        for address in address_List:
+        for address in ping_List:
             try:
-                ping(address.get_Ip_Address(), verbose=True)
+                response = ping(address.get_Ip_Address(), verbose=True)
+                response_List.append(response)
+                ping_List.remove(address)
                 sleep(3)
             except:
                 print("Unable to ping: ", address.get_Ip_Address())
                 failed_List.append(address)
-                address_List.remove(address)
-                print("\nRemoved address, trying list again...\n")
+                ping_List.remove(address)
+                print("\nRemoved address, continuing...\n")
                 sleep(1)
                 IpAddress.ping_IP()
 
@@ -43,17 +45,27 @@ class IpAddress:
     def create_Object(ip_Address):
         new_Object = IpAddress(ip_Address)
         address_List.append(new_Object)
+        print("Done\n")
 
     # Print a list of IP's in list
     @staticmethod
     def print_List():
         for address in address_List:
             print(address.get_Ip_Address(), '\n')
+        print("Done\n")
 
     @staticmethod
     def clear_List():
         for address in address_List:
             address_List.remove(address)
+        print("Done\n")
+
+    @staticmethod
+    def show_Failed():
+        print("Addresses failed: ")
+        for address in failed_List:
+            print(address.get_Ip_Address())
+        print("Done\n")
 
 
 def input_Ip_Address():
@@ -75,16 +87,23 @@ def input_Ip_Address():
                 return
 
 
+def iterate_List(List):
+    for item in List:
+        print(item)
+
+
 def update_List():
     global address_List
     address_List = load()
+    print("Done\n")
 
 
 def menuGui():
     choice = 0
 
     print("Hello, what would you like to do?")
-    print("Add IP to list - Ping List - show List - Clear list\n - save List - load List\n - Help - Quit")
+    print("Add IP to list - Ping List - show List - Clear list\n - save List - load List\n - Help - "
+          "Quit")
 
     while choice != 'quit':
         choice = input(">")
@@ -92,13 +111,14 @@ def menuGui():
         if choice == 'add':
             input_Ip_Address()
         elif choice == 'ping':
+            for item in address_List:
+                ping_List.append(item)
             IpAddress.ping_IP()
             print("Ping Done\n")
-            print("Addresses failed: ")
-            for address in failed_List:
-                print(address.get_Ip_Address())
+            IpAddress.show_Failed()
         elif choice == 'show':
             IpAddress.print_List()
+            iterate_List(response_List)
         elif choice == 'save':
             save(address_List)
         elif choice == 'load':
