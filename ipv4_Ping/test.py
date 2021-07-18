@@ -1,5 +1,9 @@
 from pythonping import ping
 from time import sleep
+from data_Handling import save, load
+
+#   TODO
+#   Make better with Tkinter
 
 address_List = []
 outputList = []
@@ -62,28 +66,39 @@ def input_Ip_Address():
                 return
 
 
+def update_List():
+    global address_List
+    address_List = load()
+
+
 def menuGui():
     choice = 0
 
     print("Hello, what would you like to do?")
 
-    while choice != 5:
+    while choice != 7:
         print("1 - Add IP to list")
-        print("2 - Clear list")
-        print("3 - Ping List")
-        print("4 - show List")
-        print("5 - Quit")
+        print("2 - Ping List")
+        print("3 - show List")
+        print("4 - save List")
+        print("5 - load List")
+        print("6 - Clear list")
+        print("7 - Quit")
         choice = int(input(">"))
 
         if choice == 1:
             input_Ip_Address()
         elif choice == 2:
-            IpAddress.clear_List()
-        elif choice == 3:
             IpAddress.ping_IP()
-        elif choice == 4:
+        elif choice == 3:
             IpAddress.print_List()
+        elif choice == 4:
+            save(address_List)
         elif choice == 5:
+            update_List()
+        elif choice == 6:
+            IpAddress.clear_List()
+        elif choice == 7:
             exit()
         else:
             print("Invalid choice...")
